@@ -10,6 +10,7 @@ import math
 from Match.icp import icp
 
 global km2px, deg2km, px2km, deg2px
+
 km2px = 1/0.118
 deg2km = 2*np.pi*1737.4/360
 px2km = 0.118
@@ -17,12 +18,16 @@ deg2px = 256
 
 
 def compute_pos_diff(A, B, CAMx, CAMy):
-
+    # Compute the difference between the position of the camera center
+    # A: the initial position of the camera center
+    # B: the new position of the camera center
+    # CAMx: the x coordinate of the camera center
+    # CAMy: the y coordinate of the camera center
     hp = A
     x1_a, x2_a, x3_a = float(hp.x1), float(hp.x2), float(hp.x3)
     y1_a, y2_a, y3_a = float(hp.y1), float(hp.y2), float(hp.y3)
     r1_a, r3_a, r3_a = float(hp.r1), float(hp.r2), float(hp.r3)
-
+    # Convert the initial position of the camera center to the absolute coordinates
     A1 = np.hstack([x1_a, y1_a])
     A2 = np.hstack([x2_a, y2_a])
     A3 = np.hstack([x3_a, y3_a])
@@ -33,7 +38,7 @@ def compute_pos_diff(A, B, CAMx, CAMy):
     x1_b, x2_b, x3_b = float(hp.lon1), float(hp.lon2), float(hp.lon3)
     y1_b, y2_b, y3_b = float(hp.lat1), float(hp.lat2), float(hp.lat3)
     r1_b, r2_b, r3_b = float(hp.r1), float(hp.r2), float(hp.r3)
-
+    # Convert the new position of the camera center to the absolute coordinates
     x1_b_r, y1_b_r, r1_b_r = absolute2relative([x1_b, y1_b, r1_b], CAMx, CAMy)
     x2_b_r, y2_b_r, r2_b_r = absolute2relative([x2_b, y2_b, r2_b], CAMx, CAMy)
     x3_b_r, y3_b_r, r3_b_r = absolute2relative([x3_b, y3_b, r3_b], CAMx, CAMy)
@@ -45,28 +50,16 @@ def compute_pos_diff(A, B, CAMx, CAMy):
     B = np.vstack([B1, B2, B3])
 
     R, t = icp(A, B)
-
+    # Use the ICP algorithm to calculate the difference between the initial position and the new position of the camera center
     xc = t[0]
     yc = t[1]
 
-    # XC, YC = 850/2, 850/2
-
-    # delta_x = XC-xc
-    # delta_y = YC-yc
-    # # Recompute centroid in LAT-LON:
-
-    # u = 257.52  # ? DEG TO PXS
-    # px2deg = 1/u  # pixel to degree
-    # delta_x *= px2deg
-    # delta_y *= px2deg
-
-    # C = [xc_lon, yc_lat]
-    # pos = [C[0]-delta_x, C[1]-delta_y]
     pos = [xc, yc]
     return pos
 
 
 def img_plus_crts(img, craters_det, color="red"):
+    # Plot the craters on the image
     # Input: Img:3 chanel, craters_det: np.array
     b = craters_det
     image = img.copy()
@@ -87,14 +80,17 @@ def img_plus_crts(img, craters_det, color="red"):
     return image
 
 
-def eu_dist(x, y):
+def eu_dist(x: tuple[int, int], y: tuple[int, int]) -> float:
+    """ Calculate Euclidean distance between two points """
     x1, y1 = x[0], x[1]
     x2, y2 = y[0], y[1]
     result = ((((x2 - x1)**2) + ((y2-y1)**2))**0.5)
+    print("Euclidean distance between {0} and {1} is {2}".format(x, y, result))
     return result
 
 
 def draw_craters(df, lon_b, lat_b, u=None):
+    # Draw the craters on the image
     lon_bounds = lon_b
     lat_bounds = lat_b
     # CAMERA CENTER:
@@ -143,6 +139,7 @@ def draw_craters(df, lon_b, lat_b, u=None):
 
 
 def draw_craters_on_image(df, lon_b, lat_b, img, u=None):
+    # Draw the craters on the image with a given image 
     if df is None:
         return img
     else:
@@ -190,15 +187,18 @@ def draw_craters_on_image(df, lon_b, lat_b, img, u=None):
 
 
 def cartesian2spherical(x, y, z):
-    ###########################################################################
-    # Inputs: x, y, z
-    ###########################################################################
-    # Outputs:
-    ###########################################################################
-    # h: Altitude (km)
-    # Lat: Latitude (deg)
-    # Lon: Longitude (deg)
-    ###########################################################################
+    """ Convert cartesian coordinates to spherical coordinates.
+
+    Args:
+        x (float): cartesian x coordinate
+        y (float): cartesian y coordinate
+        z (float): cartesian z coordinate
+
+    Returns:
+        h (np.array): spherical h coordinate in km
+        Lat (np.array): spherical h coordinate in deg
+        Lon (np.array): spherical h coordinate in deg
+    """
     h, Lat, Lon = cartesian_to_spherical(x, y, z)
     R_moon = 1737.4
     h = h - R_moon
@@ -208,27 +208,36 @@ def cartesian2spherical(x, y, z):
 
 
 def spherical2cartesian(h, Lat, Lon):
-    ###########################################################################
-    # Inputs:
-    ###########################################################################
-    # h: Altitude (km)
-    # Lat: Latitude (deg)
-    # Lon: Longitude (deg)
-    ###########################################################################
-    # Outputs: x, y, z
-    ###########################################################################
-    R_moon = 1737.4
+    """ Convert spherical coordinates to cartesian coordinates.
+
+    Args:
+        h (float):  Altitude (km)
+        Lat (float): Latitude (deg)
+        Lon (float): Longitude (deg)
+
+    Returns:
+        x (np.array): cartesian x coordinate
+        y (np.array): cartesian y coordinate
+        z (np.array): cartesian z coordinate
+    """    
+    R_moon = 1737.4 # Moon radius in km
     x, y, z = spherical_to_cartesian(
         h + R_moon, np.deg2rad(Lat), np.deg2rad(Lon))
     return np.array(x), np.array(y), np.array(z)
 
-
 def CatalogSearch(H, lat_bounds: np.array, lon_bounds: np.array, CAT_NAME):
-    # -180 to 180 // formulation 1
-    #   0  to 360 // formulation 2
-    # Example: 190 lon //formulation 2 --> -170 lon // formulation 1
-    # -10 lon == 350 lon
-    # We want to pass from f1 --> f2
+    """
+    This function will search the catalog and return the craters that fall within the specified bounds
+    :param H: The catalog
+    :param lat_bounds: The latitude bounds
+    :param lon_bounds: The longitude bounds
+    :param CAT_NAME: The name of the catalog
+    :return: A dataframe containing the craters that fall within the specified bounds
+    """
+
+
+
+    # Choose the columns to use depending on the catalog
     if CAT_NAME == "LROC":
         LATs = np.array(H["Lat"])
         DIAMs = np.array(H["Diameter (km)"])
@@ -248,6 +257,12 @@ def CatalogSearch(H, lat_bounds: np.array, lon_bounds: np.array, CAT_NAME):
         LATs = np.array(H["lat"])
         DIAMs = np.array(H["diam"])
 
+    # Convert longitudes from [-180, 180] to [0, 360]
+        # -180 to 180 // formulation 1
+        #   0  to 360 // formulation 2
+        # Example: 190 lon //formulation 2 --> -170 lon // formulation 1
+        # -10 lon == 350 lon
+        # We want to pass from f1 --> f2
     LONs_f1 = np.where(LONs > 180, LONs - 360, LONs)
 
     cond1 = LONs_f1 < lon_bounds[1]
@@ -255,21 +270,26 @@ def CatalogSearch(H, lat_bounds: np.array, lon_bounds: np.array, CAT_NAME):
     cond3 = LATs > lat_bounds[0]
     cond4 = LATs < lat_bounds[1]
 
+    # Extract filtered data
     filt = cond1 & cond2 & cond3 & cond4
 
     LATs = LATs[filt]
     LONs_f1 = LONs_f1[filt]
     DIAMs = DIAMs[filt]
+    
+    # If there are no craters in the filtered data, return None
     if LONs_f1 != []:
         craters = np.hstack(
             [np.vstack(LONs_f1), np.vstack(LATs), np.vstack(DIAMs)])
         df = pd.DataFrame(data=craters, columns=["Lon", "Lat", "Diam"])
         return df
     else:
-        pass
+        return None
 
+    
 
 def row(idx, df):
+    # Return the row of the dataframe at the given index.
     return df.iloc[idx]
 
 
@@ -306,25 +326,51 @@ def printProgressBar(
         print()
 
 
-def find_dteta(H) -> float:
-    # Output in deg
-    FOV = np.deg2rad(45)
-    d = 2 * H * np.tan(FOV)
-    R_m = 1737.1
-    dteta = d / R_m
-    dteta = np.rad2deg(dteta)
-    return dteta
+def find_dteta(H: float) -> float:
+    """Determines the change in latitude of an object on Mars given the height of the object
+    above the surface of Mars
+
+    Parameters
+    ----------
+    H : float
+        Height of the object above the surface of Mars (km)
+
+    Returns
+    -------
+    float
+        Change in latitude of an object on Mars (degrees)
+    """
+    try:
+        FOV = np.deg2rad(45)  # Field of View of camera
+        d = 2 * H * np.tan(FOV)  # Distance to horizon
+        R_m = 1737.1  # Radius of Mars
+        dteta = d / R_m  # Change in latitude
+        dteta = np.rad2deg(dteta)  # Change in latitude in degrees
+        return dteta
+    except:
+        return None
 
 
-def remove_items(list, item):
 
+def remove_items(list: list, item: object) -> list:
+    # remove all occurrences of a given item from a list
     # using list comprehension to perform the task
     res = [i for i in list if i != item]
-
     return res
 
 
-def remove_mutliple_items(indexes):
+def remove_multiple_items(indexes: np.ndarray) -> np.ndarray:
+    """The code above does the following:
+        1. remove all occurrences of a given item from a list
+        2. concatenate the two lists of items to be kept 
+
+    Args:
+        indexes (np.ndarray): array of indexes
+
+    Returns:
+        np.ndarray: _description_
+    """    
+    # remove all occurrences of a given item from a list
     # print(indexes)
     idx_a = indexes[:, 0]
     idx_b = indexes[:, 1]
@@ -332,35 +378,73 @@ def remove_mutliple_items(indexes):
     list_a = []
     list_b = []
     for elem_a, elem_b in zip(idx_a, idx_b):
+        # if there is at least one occurrence of the same item in both lists
         if (
             np.count_nonzero(idx_a == elem_a) > 1
             or np.count_nonzero(idx_b == elem_b) > 1
         ):
+            # add 0 to the list of items to be removed
             list_a.append(0)
             list_b.append(0)
         else:
+            # add the item to the list of items to be kept
             list_a.append(elem_a)
             list_b.append(elem_b)
+    # remove all 0 items from the list
     a = remove_items(list_a, 0)
     b = remove_items(list_b, 0)
     a, b = np.vstack(a), np.vstack(b)
-    v = np.hstack([a, b])
+    # concatenate the two lists of items to be kept
+    if a.shape[0] == 0 or b.shape[0] == 0:
+        v = np.array([])
+    else:
+        v = np.hstack([a, b])
     return v
 
 
 @njit
-def findAngles(a, b, c):
+def findAngles(a: float, b: float, c: float):
+    """ Find the angles of a triangle given the lengths of the sides
+
+    Args:
+        a (float): a side of the triangle
+        b (float): b side of the triangle
+        c (float): c side of the triangle
+
+    Returns:
+        A: angle opposite side a
+        B: angle opposite side b
+        C: angle opposite side c
+    """    
     # applied cosine rule
-    A = np.arccos((b * b + c * c - a * a) / (2 * b * c))
-    B = np.arccos((a * a + c * c - b * b) / (2 * a * c))
-    C = np.arccos((b * b + a * a - c * c) / (2 * b * a))
+    # find the angle opposite side a
+    A = np.arccos((b**2 + c**2 - a**2) / (2 * b * c))
+    # find the angle opposite side b
+    B = np.arccos((a**2 + c**2 - b**2) / (2 * a * c))
+    # find the angle opposite side c
+    C = np.arccos((b**2 + a**2 - c**2) / (2 * b * a))
     # convert into degrees
     A, B, C = np.rad2deg(A), np.rad2deg(B), np.rad2deg(C)
     return A, B, C
 
 
+
+
 @njit
 def compute_K_vet(triplet):
+    """ This code computes the angles of a triangle, sorts them, and returns them.
+        It takes in a triplet of points and returns a triplet of angles.
+        The function names and variable names are important because they describe what the code does.
+        The purpose of the code is to compute the angles of a triangle and return them.
+        The context of the code is that it is used to compute the angles of a triangle.
+        The code is relevant because it is used to compute the angles of a triangle.
+
+    Args:
+        triplet (np.array): triplet of points
+
+    Returns:
+        K_vet: vector of angles
+    """    
     a, b, c = compute_sides(triplet)
     A, B, C = findAngles(a, b, c)
     K_vet = np.sort(np.array([A, B, C]))
@@ -370,15 +454,53 @@ def compute_K_vet(triplet):
 
 @njit
 def compute_sides(triplet):
-    a = np.linalg.norm(triplet[0][0:2] - triplet[1][0:2])
-    b = np.linalg.norm(triplet[1][0:2] - triplet[2][0:2])
-    c = np.linalg.norm(triplet[2][0:2] - triplet[0][0:2])
+    # Compute the sides of a triangle from three points
+    # Compute the length of the first side
+    try:
+        a = np.linalg.norm(triplet[0][0:2] - triplet[1][0:2])
+    except TypeError:
+        return np.nan, np.nan, np.nan
+    # Compute the length of the second side
+    try:
+        b = np.linalg.norm(triplet[1][0:2] - triplet[2][0:2])
+    except TypeError:
+        return np.nan, np.nan, np.nan
+    # Compute the length of the third side
+    try:
+        c = np.linalg.norm(triplet[2][0:2] - triplet[0][0:2])
+    except TypeError:
+        return np.nan, np.nan, np.nan
     return a, b, c
 
 
 def find_all_triplets(craters):
+    """ This code finds all the triplets of points in a list of points.
 
+    Args:
+        craters (np.array): crater points
+    """    
+    
     def Hstack(K_v, i, j, k, x1, y1, r1, x2, y2, r2, x3, y3, r3):
+        """Stacks the provided arguments into a single array.
+        
+        Arguments:
+            K_v: a 3-element array containing the camera intrinsics
+            i: the index of the first image
+            j: the index of the second image
+            k: the index of the third image
+            x1: the x-coordinate of the first point
+            y1: the y-coordinate of the first point
+            r1: the radius of the first point
+            x2: the x-coordinate of the second point
+            y2: the y-coordinate of the second point
+            r2: the radius of the second point
+            x3: the x-coordinate of the third point
+            y3: the y-coordinate of the third point
+            r3: the radius of the third point
+        
+        Returns:
+            A 15-element array containing the provided arguments.
+        """
         A = np.zeros(15)
         A[0], A[1], A[2] = K_v[0], K_v[1], K_v[2]
         A[3], A[4], A[5] = i, j, k
@@ -388,24 +510,27 @@ def find_all_triplets(craters):
         return A
 
     def eu_dist(x, y):
+        # Compute the Euclidean distance between two points x and y
         x1, y1 = x[0], x[1]
         x2, y2 = y[0], y[1]
         result = ((((x2 - x1)**2) + ((y2-y1)**2))**0.5)
         return result
 
     def concat(a, b, c):
+        # initialize the array
         A = np.zeros((3, 3))
+        
+        # assign the values
         A[0] = a
         A[1] = b
         A[2] = c
+        
         return A
 
-    # Input: np.array craters
-    # Output: all triplets
-    N = craters.shape[0]
-    ender = N*N*N
-    K = np.zeros((ender, 15))
-    lister = 0
+    N = craters.shape[0]  # number of craters
+    ender = N*N*N  # number of possible triplets
+    K = np.zeros((ender, 15))  # matrix to store the values of K for each triplet
+    lister = 0  # counter for the iteration
     for i in range(N):
         printProgressBar(i+1, N, printEnd='')
         for j in range(N):
@@ -446,25 +571,42 @@ def find_all_triplets(craters):
 
 
 def swap_df_columns(colname_1, colname_2, df):
+    # Make a copy of the first column
     tmp = deepcopy(df[colname_1])
+    # Overwrite the first column with the second column
     df[colname_1] = df[colname_2]
+    # Overwrite the second column with the first column (i.e. the copy)
     df[colname_2] = tmp
     return df
 
 
 def load_all_images(dt):
     # LOAD ALL IMAGES:
-    dt = 10
-    dict = {}
+    # Define a container for the images
+    container = {}
+    # for each image in the folder
     for img in glob.glob(f"DATA/ephemeris sat/inclination zero/{dt} step size/*"):
+        # Extract the time of the image
         txt = img             # stringa
         t = txt.split('_')[1]  # numero
-        dict[t] = txt
-    return dict
+        # Add the image to the container
+        container[t] = txt
+    return container
 
 
 def absolute2relative(crt, CAMx, CAMy, canvas=[849, 849], km2px=1/0.188):
-    # Input: crt: lon, lat, r(km); Canvas: size in px of image, CAMx, CAMy:center pose | Output: x,y, r(pix)
+    """ Transform the absolute coordinates of the crater into the relative ones
+
+    Args:
+        crt (np.array): lon (deg), lat (deg), r (km)
+        CAMx (_type_): camera center x
+        CAMy (_type_): camera center y
+        canvas (list, optional): size in px of image. Defaults to [849, 849].
+        km2px (float, optional): km to px conversion. Defaults to 1/0.188.
+
+    Returns:
+        list: x,y, r(pix)
+    """
     # crater center:
     xc, yc, rc = crt[0], crt[1], crt[2]  # This is in the absolute frame
     # f: Absolute --> f: Relative
@@ -516,9 +658,6 @@ def ecef_to_enu(x, y, z, lat0, lon0, h0):
     return xEast, yNorth, zUp
 
 
-def main():
-    pass
-
 
 if __name__ == "__main__":
-    main()
+    pass

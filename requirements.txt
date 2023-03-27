@@ -1,0 +1,5 @@
+astropy
+poliastro
+pandas
+numpy
+opencv
