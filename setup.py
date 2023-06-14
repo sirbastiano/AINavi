@@ -2,6 +2,12 @@ from setuptools import setup, find_packages
 import os
 import subprocess
 import platform
+import urllib.request
+
+def download_checkpoint_file(url, filename):
+    urllib.request.urlretrieve(url, filename)
+    print(f"Downloaded {filename}")
+
 
 def is_linux():
     return platform.system() == 'Linux'
@@ -24,14 +30,13 @@ def install_dependencies():
     subprocess.check_call(["mim", "install", "mmengine"])
     subprocess.check_call(["mim", "install", "mmcv>=2.0.0"])
     subprocess.check_call(["pip", "install", "mmdet"])
-    # subprocess.check_call(["git", "clone", "https://github.com/open-mmlab/mmdetection.git"])
-    # os.chdir("./mmdetection")
-    # subprocess.check_call(["pip", "install", "-v", "-e", "."])
-    # os.chdir("..")
-    # subprocess.check_call(["pip", "install", "tifffile"])
 
 
 install_dependencies()
+
+url = "https://github.com/sirbastiano/AINavi/releases/download/v0/checkpoint.pth"
+filename = "CDA/checkpoint.pth"
+download_checkpoint_file(url, filename)
 
 setup(
     name="navi_project",
