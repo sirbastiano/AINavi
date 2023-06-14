@@ -7,7 +7,7 @@ from copy import deepcopy
 import glob
 import math
 
-from Match.icp import icp
+from CMA.icp import icp
 
 global km2px, deg2km, px2km, deg2px
 

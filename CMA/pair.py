@@ -3,7 +3,7 @@ from utility.utils import *
 import matplotlib.pyplot as plt
 from math import sqrt
 
-from Match.icp import icp
+from CMA.icp import icp
 
 
 def sq_dif(f1, f2):

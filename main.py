@@ -19,10 +19,10 @@ import glob
 
 # Own Libraries
 from utility.utils import *
-from KalmanFilter.kf import *
+from EKF.kf import *
 from CAMDetector.detect import *
-from Match.pair import *
-from Match.icp import *
+from CMA.pair import *
+from CMA.icp import *
 
 style.use('seaborn-paper')
 

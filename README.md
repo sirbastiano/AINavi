@@ -14,10 +14,16 @@ The core algorithm is the crater detection algortihm (CDA), an implementation of
 
 This script checks if Python is installed and then runs the setup.py file with the develop command, installing the specified dependencies and setting up the mmdetection project.
 
-Install the script with:
+1. Install the lib with:
 ```
 source  runscripts/install.sh
 ```
+2. Downloade the weight of the model from:
+https://zenodo.org/record/7774198
+
+3. Place the weight in the CDA/checkpoint folder
+```
+
 
 # The repository includes:
 * Source code of crater detection algorithm (CDA) 
