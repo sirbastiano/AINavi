@@ -16,8 +16,9 @@ os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 parser = argparse.ArgumentParser(description='Inference on a single image')
 parser.add_argument('--img_path', type=str, help='path to the image')
 parser.add_argument('--threshold', type=float, default=0.3, help='Confidence threshold for detection')
-# add device argument
 parser.add_argument('--device', type=str, default='cpu', help='device used for inference: cpu or cuda:0')
+# add argument to save or not the image:
+parser.add_argument('--save', type=bool, default=True, help='save the image with bounding boxes') 
 
 def draw_bounding_boxes(image, bounding_boxes, scores=None, score_threshold=0.05, backend_args=None, savepath=None):
     """
@@ -116,5 +117,5 @@ if __name__ == '__main__':
     new_name = base_name + '_pred.png'
     savepath = Path('output_results') / new_name
     # Draw the bounding boxes on the image
-    draw_bounding_boxes(img, boxes, scores = scores, backend_args=dict(figsize=(10, 10), dpi=300), savepath=savepath, score_threshold=args.threshold)
+    draw_bounding_boxes(img, boxes, scores = scores, backend_args=dict(figsize=(15, 15), dpi=300), savepath=savepath, score_threshold=args.threshold)
     print('Image saved.')

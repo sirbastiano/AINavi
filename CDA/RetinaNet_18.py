@@ -1,3 +1,11 @@
+# Configurable parameters:
+# Img scale chanes the size of the input images to the model
+# NB: - the model was trained on 768x768 images
+#     - the bigger the image, the more memory it will consume
+#     - the bigger the image, the more inference time it will be required
+IMG_SCALE = (1024, 1024)
+
+# model settings:
 model = dict(
     type='RetinaNet',
     data_preprocessor=dict(
@@ -67,7 +75,6 @@ dataset_type = 'CocoDataset'
 data_root = 'data/craters/'
 metainfo = dict(classes=('crater', ), palette=[(220, 20, 60)])
 backend_args = None
-IMG_SCALE = (1024, 1024)
 train_pipeline = [
     dict(type='Mosaic', img_scale=IMG_SCALE, pad_val=114.0),
     dict(

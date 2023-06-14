@@ -30,7 +30,6 @@ def install_dependencies():
     # os.chdir("..")
     # subprocess.check_call(["pip", "install", "tifffile"])
 
-    os.remove("mmdet.egg-info")
 
 install_dependencies()
 
