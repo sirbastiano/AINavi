@@ -5,11 +5,27 @@ import platform
 import urllib.request
 
 def download_checkpoint_file(url, filename):
+    """
+    Downloads a file from the given URL and saves it with the specified filename.
+
+    Args:
+        url (str): The URL of the file to download.
+        filename (str): The filename to save the downloaded file as.
+
+    Returns:
+        None: This function does not return anything.
+    """
     urllib.request.urlretrieve(url, filename)
     print(f"Downloaded {filename}")
 
 
-def is_linux():
+def is_linux() -> bool:
+    """
+    Returns True if the current operating system is Linux, False otherwise.
+
+    Returns:
+        bool: True if the current operating system is Linux, False otherwise.
+    """
     return platform.system() == 'Linux'
 
 if is_linux():
@@ -17,10 +33,26 @@ if is_linux():
 else:
     print("The system is not running on Linux.")
 
-def install_dependencies():
+import subprocess
+
+def install_dependencies() -> None:
+    """
+    Installs the required dependencies for the project.
+
+    This function installs the following dependencies:
+    - PyTorch and torchvision (with specific versions depending on the operating system)
+    - SciencePlots
+    - OpenMIM
+    - MMEngine
+    - MMCV
+    - MMDetection
+
+    Returns:
+        None: This function does not return anything.
+    """
     torch_dependencies = "https://download.pytorch.org/whl/torch_stable.html"
 
-    if is_linux == 0:
+    if is_linux() == 0:
         subprocess.check_call(["pip", "install", "torch==2.0.0+cu118", "torchvision==0.15.1+cu118", "-f", torch_dependencies])
     else:
         subprocess.check_call(["pip", "install", "torch==2.0.0", "torchvision==0.15.1", "-f", torch_dependencies])
