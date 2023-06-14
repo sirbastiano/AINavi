@@ -18,7 +18,7 @@ parser.add_argument('--img_path', type=str, help='path to the image')
 parser.add_argument('--threshold', type=float, default=0.3, help='Confidence threshold for detection')
 parser.add_argument('--device', type=str, default='cpu', help='device used for inference: cpu or cuda:0')
 # add argument to save or not the image:
-parser.add_argument('--save', type=bool, default=True, help='save the image with bounding boxes') 
+parser.add_argument('--save_img_path', type=str, default='output_results', help='Path to save the image with bounding boxes') 
 
 def draw_bounding_boxes(image, bounding_boxes, scores=None, score_threshold=0.05, backend_args=None, savepath=None):
     """
@@ -115,7 +115,11 @@ if __name__ == '__main__':
     boxes = list(boxes.detach().cpu().numpy())
 
     new_name = base_name + '_pred.png'
-    savepath = Path('output_results') / new_name
+    savepath = Path(args.save_img_path) / new_name
+    # check if the directory exists otherwise creates it:
+    if not os.path.exists(args.save_img_path):
+        os.makedirs(args.save_img_path)
+    
     # Draw the bounding boxes on the image
     draw_bounding_boxes(img, boxes, scores = scores, backend_args=dict(figsize=(15, 15), dpi=300), savepath=savepath, score_threshold=args.threshold)
     print('Image saved.')

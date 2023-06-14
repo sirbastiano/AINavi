@@ -6,13 +6,37 @@ from math import sqrt
 from CMA.icp import icp
 
 
-def sq_dif(f1, f2):
+import numpy as np
+
+def sq_dif(f1: np.ndarray, f2: np.ndarray) -> float:
+    """
+    Calculates the sum of the square root of the absolute difference between the element-wise squares of two arrays.
+
+    Args:
+        f1 (np.ndarray): The first array.
+        f2 (np.ndarray): The second array.
+
+    Returns:
+        float: The sum of the square root of the absolute difference between the element-wise squares of the two arrays.
+    """
     a = abs(np.power(f1, 2) - np.power(f2, 2))
     a = np.sqrt(a)
     return np.sum(a)
 
 
 def craters_to_relative_frame(df, lon_b, lat_b, u=None):
+    """
+    Converts the coordinates of craters in an absolute frame to a relative frame.
+
+    Args:
+        df (pd.DataFrame): A pandas DataFrame containing the coordinates of the craters in the absolute frame.
+        lon_b (tuple): A tuple containing the longitude bounds of the image.
+        lat_b (tuple): A tuple containing the latitude bounds of the image.
+        u (float, optional): The scale factor. Defaults to None.
+
+    Returns:
+        np.ndarray: A numpy array containing the coordinates of the craters in the relative frame.
+    """
     lon_bounds = lon_b
     lat_bounds = lat_b
     # CAMERA CENTER:
@@ -57,6 +81,16 @@ def craters_to_relative_frame(df, lon_b, lat_b, u=None):
 
 
 def crater_catalogued(current_pos, catalog='ROBBINS'):
+    """
+    Searches a lunar crater database for craters within a certain range of latitude and longitude.
+
+    Args:
+        current_pos (Tuple[float, float, float]): The current position of the spacecraft, as a tuple of (x, y, z) coordinates.
+        catalog (str, optional): The name of the crater catalog to search. Defaults to 'ROBBINS'.
+
+    Returns:
+        Optional[pd.DataFrame]: A DataFrame containing information about the craters found within the specified latitude and longitude range, or None if the specified catalog is not available.
+    """
     # CATALOG SEARCH:
     x, y, z = current_pos[0], current_pos[1], current_pos[2]
     H, Lat, Lon = cartesian2spherical(x, y, z)  # x,y,z --> H, Lat, Lon
@@ -920,7 +954,6 @@ def H_estimation(Is, Js, mode, S, iss, CAMx,CAMy ,VERBOSE=False):
     return H, px2deg
 
 def LL_estimation(A, B, B_a, px2deg, VERBOSE=False):
-
     comb=find_pairs(A,B)
     pp = []
     for CR in range(3):

@@ -1,20 +1,19 @@
-# from functools import partial
-# import sys
-# import numpy as np
-# import matplotlib.pyplot as plt
-# from matplotlib import animation, rc
-# from math import sin, cos, atan2, pi
-# from IPython.display import display, Math, Latex, Markdown, HTML
+from functools import partial
+import sys
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import animation, rc
+from math import sin, cos, atan2, pi
 
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 
-if __name__ == "main":
-    main()
-
-
 def main():
     pass
+
+
+if __name__ == "main":
+    main()
 
 
 def best_fit_transform(A, B):
