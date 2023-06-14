@@ -32,6 +32,11 @@ The <span style="color:green;font-weight:bold">--img_path</span> argument specif
 python CDA/inference.py --img_path path_to_img  --threshold 0.3 --device 'cpu'
 ```
 
+### > :
+<p align="center">
+ <img src="src/2_pred.png" width="500" height="500">
+</p>
+
 
 # 💿 Additional data:
 
@@ -67,7 +72,30 @@ Contributions are welcome! Please see the [contributing guidelines](CONTRIBUTING
 This project is licensed under the [MIT License](LICENSE).
 
 ## ✍🏻  Citation
-Use this bibtex to cite this repository:
+Please use these bibtex to cite our work in your publications:
+
+```
+@inproceedings{del2022deep,
+  title={A Deep Learning-based Crater Detector for Autonomous Vision-Based Spacecraft Navigation},
+  author={Del Prete, Roberto and Saveriano, Alfonso and Renga, Alfredo},
+  booktitle={2022 IEEE 9th International Workshop on Metrology for AeroSpace (MetroAeroSpace)},
+  pages={231--236},
+  year={2022},
+  organization={IEEE}
+}
+```
+
+```
+@inproceedings{del2021crater,
+  title={Crater-based Autonomous Position Estimation in Planetary Missions by Deep-Learning},
+  author={Del Prete, R and Renga, A and others},
+  booktitle={Proceedings of the International Astronautical Congress, IAC},
+  volume={2},
+  year={2021},
+  organization={International Astronautical Federation, IAF}
+}
+```
+
 ```
 @article{del2022novel,
   title={A Novel Visual-Based Terrain Relative Navigation System for Planetary Applications Based on Mask R-CNN and Projective Invariants},
